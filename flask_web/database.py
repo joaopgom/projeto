@@ -8,20 +8,30 @@ engine = create_engine(app.config['DATABASE_URI'],
                                 **app.config['DATABASE_OPTIONS'])
 
 db_session = scoped_session(sessionmaker(autocommit=False,
-                                         autoflush=False,))
-
+                                         autoflush=False,
+                                         bind=engine))
 
 
 Model = declarative_base()
 Model.query = db_session.query_property()
 
+
 def init_db():
     from flask_web.auth.models import User
     from flask_web.blog.models import Post, Comment, Type, Category, assoc_post_commment
     Model.metadata.create_all(engine)
-#event.listen(db_session, 'after_flush',)
 
 
+class Base(object):
+    session = db_session
+
+    def delete(self):
+        db_session.delete(self)
+        db_session.commit()
+
+    def save(self):
+        db_session.add(self)
+        db_session.commit()
 
 
 
