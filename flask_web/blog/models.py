@@ -17,6 +17,7 @@ class Category(Model, Base):
     __tablename__ = 'categories'
     id = Column(Integer, primary_key=True)
     name = Column(String(60), nullable=False)
+    post = relationship('Post', secondary=assoc_post_commment, backref=backref('categories', uselist=True))
 
     def __init__(self, name):
         self.name = name
@@ -28,7 +29,7 @@ class Post(Model, Base):
     content = Column(String(5000), nullable=False)
     created_at = Column(DateTime, nullable=False)
     visit_count = Column(Integer, server_default='0')
-    category = relationship('Category', secondary=assoc_post_commment)
+    category = relationship('Category', secondary=assoc_post_commment, backref=backref('categories', uselist=True))
     is_replied = Column(Boolean, server_default='0')
     author = Column(ForeignKey('users.id'), nullable=False)
     type = Column(ForeignKey('types.id'), nullable=False)
